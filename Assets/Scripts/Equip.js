@@ -1,7 +1,10 @@
 #pragma strict
 
 var equip_distance = 1;
-private var equipped : Equippable = null;
+
+@HideInInspector
+var equipped : Equippable = null;
+
 private var closest : Equippable = null;
 
 
@@ -54,7 +57,7 @@ function Update() {
   }
 }
 
-function OnDrawGizmosSelected () {
+function OnDrawGizmosSelected() {
 		// Draw a yellow sphere at the transform's position
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawWireSphere(transform.position, equip_distance);
