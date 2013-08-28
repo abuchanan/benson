@@ -1,35 +1,55 @@
 #pragma strict
 
 var equip_distance = 1;
-private var equipped : GameObject;
+private var equipped : Equippable = null;
+private var closest : Equippable = null;
 
-function equip(target : GameObject) {
-  Debug.Log('equip');
-  equipped = target;
-}
 
-// TODO how to drop and pickup at the same time?
+// TODO support drop and pickup in the same button press?
 function Update() {
+
+  // TODO doesn't make sense to highlight items if you can't equip them?
+  //      e.g. because you have something already equipped.
+  if (closest) {
+    closest.clear_highlight();
+  }
+
+  closest = null;
+
+  var closest_d : float;
+  var hits = Physics.OverlapSphere(gameObject.transform.position, equip_distance);
+
+  for (var hit : Collider in hits) {
+    var equippable = hit.GetComponent(Equippable);
+
+    if (!equippable) {
+      continue;
+    }
+
+    if (equipped && equippable == equipped) {
+      continue;
+    }
+
+    var d = (hit.transform.position - transform.position).sqrMagnitude;
+
+    if (!closest || d < closest_d) {
+      closest = equippable;
+      closest_d = d;
+    }
+  }
+
+  if (closest) {
+    closest.highlight();
+  }
+
   if (Input.GetKeyUp(KeyCode.E)) {
     Debug.Log('pressed');
 
-    if (!equipped) {
-        var hits = Physics.OverlapSphere(gameObject.transform.position, equip_distance);
-
-        for (var i = 0; i < hits.length; i++) {
-          var hit = hits[i].gameObject;
-          var equippable = hit.GetComponent(equippable);
-
-          if (equippable) {
-            Debug.Log(equippable.equip_name);
-            hit.transform.parent = transform;
-            equipped = hit;
-            hit.SendMessage('equipped');
-          }
-        }
+    if (!equipped && closest) {
+      closest.equip_to(gameObject);
+      equipped = closest;
     } else {
-      equipped.transform.parent = null;
-      equipped.SendMessage('unequipped');
+      equipped.unequip();
       equipped = null;
     }
   }
