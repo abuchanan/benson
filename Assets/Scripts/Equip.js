@@ -5,11 +5,8 @@ private var equipped : Equippable = null;
 private var closest : Equippable = null;
 
 
-// TODO support drop and pickup in the same button press?
 function Update() {
 
-  // TODO doesn't make sense to highlight items if you can't equip them?
-  //      e.g. because you have something already equipped.
   if (closest) {
     closest.clear_highlight();
   }
@@ -45,12 +42,14 @@ function Update() {
   if (Input.GetKeyUp(KeyCode.E)) {
     Debug.Log('pressed');
 
-    if (!equipped && closest) {
-      closest.equip_to(gameObject);
-      equipped = closest;
-    } else {
+    if (equipped) {
       equipped.unequip();
       equipped = null;
+    }
+
+    if (closest) {
+      closest.equip_to(gameObject);
+      equipped = closest;
     }
   }
 }
