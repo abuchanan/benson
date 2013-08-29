@@ -62,3 +62,8 @@ function OnDrawGizmosSelected() {
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawWireSphere(transform.position, equip_distance);
 }
+
+function is_equipped(other : GameObject) {
+  var other_equippable = other.GetComponent(Equippable);
+  return equipped && other_equippable && equipped == other_equippable;
+}
